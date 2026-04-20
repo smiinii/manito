@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>태초마을 MT: 마니또</title>
+    <title>태초마을 MT: 보안 마니또</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></script>
     <style>
@@ -313,7 +313,21 @@
             const message = `🤫 태초마을 마니또 초대장!\n\n▶ 방 코드: ${currentRoomId}\n\n접속 링크:\n${shareUrl}`;
             const textarea = document.createElement('textarea');
             textarea.value = message; document.body.appendChild(textarea); textarea.select();
-            try { document.execCommand('copy'); alert("✅ 초대 링크가 복사되었습니다!\n카톡에 바로 '붙여넣기' 하세요."); } catch (err) { prompt("복사해서 공유하세요:", message); }
+            try { document.execCommand('copy'); alert("✅ 초대 링크가 복사되었습니다!\n단톡방에 '붙여넣기' 하세요."); } catch (err) { prompt("복사해서 공유하세요:", message); }
+            document.body.removeChild(textarea);
+        };
+
+        window.copyPersonalLink = (manittoName, password) => {
+            const shareUrl = window.location.href.split('?')[0] + `?room=${currentRoomId}`;
+            const message = `🤫 태초마을 보안 마니또!\n\n[${manittoName}]님을 위한 개별 접속 정보입니다.\n\n▶ 방 코드: ${currentRoomId}\n▶ 이름: ${manittoName}\n▶ 비밀번호: ${password}\n\n👇 아래 링크로 접속해서 미션을 확인하세요!\n${shareUrl}`;
+            const textarea = document.createElement('textarea');
+            textarea.value = message; document.body.appendChild(textarea); textarea.select();
+            try { 
+                document.execCommand('copy'); 
+                alert(`✅ ${manittoName}님의 정보가 복사되었습니다!\n${manittoName}님 개인 톡방에 붙여넣기 하세요.`); 
+            } catch (err) { 
+                prompt("복사해서 공유하세요:", message); 
+            }
             document.body.removeChild(textarea);
         };
 
@@ -425,7 +439,17 @@
 
             if (isAdmin) {
                 document.getElementById('admin-panel').classList.remove('hidden');
-                document.getElementById('pw-list').innerHTML = roomData.assignments.map(a => `<div class="bg-slate-800 p-2 rounded border border-slate-700 flex justify-between items-center"><span class="text-indigo-100 font-bold">${a.manitto}</span><span class="text-pink-400 font-bold font-mono text-sm">${a.password}</span></div>`).join('');
+                document.getElementById('pw-list').innerHTML = roomData.assignments.map(a => `
+                    <div class="bg-slate-800 p-2 rounded border border-slate-700 flex justify-between items-center gap-2">
+                        <span class="text-indigo-100 font-bold whitespace-nowrap">${a.manitto}</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-pink-400 font-bold font-mono text-sm">${a.password}</span>
+                            <button onclick="window.copyPersonalLink('${a.manitto}', '${a.password}')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] px-2 py-1 rounded transition-colors whitespace-nowrap" title="이 사람에게만 카톡 보내기">
+                                <i class="fas fa-copy"></i> 갠톡 복사
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
             } else {
                 document.getElementById('admin-panel').classList.add('hidden');
             }
