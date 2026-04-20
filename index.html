@@ -280,16 +280,47 @@
         });
         initAuth();
 
+        // 💡 URL 파라미터로 방 코드와 이름 자동 입력 및 잠금 처리
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const rCode = urlParams.get('room');
+            const rName = urlParams.get('name');
+
+            if (rCode) {
+                const codeInput = document.getElementById('join-code');
+                codeInput.value = rCode;
+                codeInput.readOnly = true;
+                codeInput.classList.add('opacity-50', 'cursor-not-allowed'); // 수정 불가 표시
+            }
+            if (rName) {
+                const nameInput = document.getElementById('join-nickname');
+                nameInput.value = rName;
+                nameInput.readOnly = true;
+                nameInput.classList.add('opacity-50', 'cursor-not-allowed'); // 수정 불가 표시
+            }
+        });
+
         window.goHome = () => {
             document.getElementById('view-result').classList.add('hidden');
             document.getElementById('view-setup').classList.add('hidden');
             document.getElementById('master-key-modal').classList.add('hidden');
             document.getElementById('view-entrance').classList.remove('hidden');
             
-            document.getElementById('join-pw').value = '';
-            document.getElementById('join-code').value = '';
-            document.getElementById('join-nickname').value = '';
+            const joinPw = document.getElementById('join-pw');
+            const joinCode = document.getElementById('join-code');
+            const joinNick = document.getElementById('join-nickname');
+
+            joinPw.value = '';
+            joinCode.value = '';
+            joinNick.value = '';
             document.getElementById('name-input').value = '';
+            
+            // 입력창 잠금 해제
+            joinCode.readOnly = false;
+            joinCode.classList.remove('opacity-50', 'cursor-not-allowed');
+            joinNick.readOnly = false;
+            joinNick.classList.remove('opacity-50', 'cursor-not-allowed');
+
             names = [];
             currentRoomId = null;
             roomData = null;
@@ -313,18 +344,24 @@
             const message = `🤫 태초마을 마니또 초대장!\n\n▶ 방 코드: ${currentRoomId}\n\n접속 링크:\n${shareUrl}`;
             const textarea = document.createElement('textarea');
             textarea.value = message; document.body.appendChild(textarea); textarea.select();
-            try { document.execCommand('copy'); alert("✅ 초대 링크가 복사되었습니다!\n단톡방에 '붙여넣기' 하세요."); } catch (err) { prompt("복사해서 공유하세요:", message); }
+            try { document.execCommand('copy'); alert("✅ 단톡방용 초대 링크가 복사되었습니다!\n단톡방에 바로 '붙여넣기' 하세요."); } catch (err) { prompt("복사해서 공유하세요:", message); }
             document.body.removeChild(textarea);
         };
 
+        // 💡 동기 개인에게 갠톡으로 비번과 링크를 쏴주는 버튼 로직
         window.copyPersonalLink = (manittoName, password) => {
-            const shareUrl = window.location.href.split('?')[0] + `?room=${currentRoomId}`;
-            const message = `🤫 태초마을 보안 마니또!\n\n[${manittoName}]님을 위한 개별 접속 정보입니다.\n\n▶ 방 코드: ${currentRoomId}\n▶ 이름: ${manittoName}\n▶ 비밀번호: ${password}\n\n👇 아래 링크로 접속해서 미션을 확인하세요!\n${shareUrl}`;
+            const baseUrl = window.location.href.split('?')[0];
+            // 개인 링크에 방 코드와 이름 데이터를 심어줌
+            const shareUrl = `${baseUrl}?room=${currentRoomId}&name=${encodeURIComponent(manittoName)}`;
+            const message = `🤫 태초마을 보안 마니또!\n\n[${manittoName}]님을 위한 전용 접속 링크입니다.\n\n▶ 방 코드: ${currentRoomId}\n▶ 이름: ${manittoName}\n▶ 비밀번호: ${password}\n\n👇 아래 링크로 접속해서 [비밀번호]만 입력하세요!\n${shareUrl}`;
+            
             const textarea = document.createElement('textarea');
-            textarea.value = message; document.body.appendChild(textarea); textarea.select();
+            textarea.value = message; 
+            document.body.appendChild(textarea); 
+            textarea.select();
             try { 
                 document.execCommand('copy'); 
-                alert(`✅ ${manittoName}님의 정보가 복사되었습니다!\n${manittoName}님 개인 톡방에 붙여넣기 하세요.`); 
+                alert(`✅ [${manittoName}]님의 전용 링크와 비번이 복사되었습니다!\n${manittoName}님의 개인 카톡방에 붙여넣기 하세요.`); 
             } catch (err) { 
                 prompt("복사해서 공유하세요:", message); 
             }
@@ -444,7 +481,7 @@
                         <span class="text-indigo-100 font-bold whitespace-nowrap">${a.manitto}</span>
                         <div class="flex items-center gap-2">
                             <span class="text-pink-400 font-bold font-mono text-sm">${a.password}</span>
-                            <button onclick="window.copyPersonalLink('${a.manitto}', '${a.password}')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] px-2 py-1 rounded transition-colors whitespace-nowrap" title="이 사람에게만 카톡 보내기">
+                            <button onclick="window.copyPersonalLink('${a.manitto}', '${a.password}')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] px-2 py-1 rounded transition-colors whitespace-nowrap" title="갠톡으로 보내기">
                                 <i class="fas fa-copy"></i> 갠톡 복사
                             </button>
                         </div>
