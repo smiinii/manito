@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>태초마을 MT: 킹받는 마니또 (Cloud)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Jua&display=swap');
+        
+        body {
+            font-family: 'Jua', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .title-font { font-family: 'Black Han Sans', sans-serif; }
+
+        .mission-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes pulse-indigo {
+            0%, 100% { box-shadow: 0 0 15px rgba(99, 102, 241, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.8); }
+        }
+        .neon-glow { animation: pulse-indigo 2s infinite; }
+        
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #6366f1;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .confidential {
+            filter: blur(10px);
+            transition: filter 0.3s;
+            user-select: none;
+        }
+        .confidential:active {
+            filter: blur(0);
+        }
+
+        .my-card {
+            border: 2px solid #fbbf24 !important;
+            background: rgba(251, 191, 36, 0.15) !important;
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.2);
+        }
+
+        input, button, select {
+            font-size: 16px !important;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-6">
+
+    <div class="max-w-md mx-auto">
+        <div class="text-center mb-8 mt-4">
+            <h1 class="title-font text-4xl md:text-5xl text-indigo-400 mb-2 tracking-tighter">MANITTO <span class="text-pink-500">PRO</span></h1>
+            <p class="text-indigo-200 opacity-80 italic text-sm">"태초마을 전용 프로젝트 연결됨"</p>
+            <div id="connection-status" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-[10px] mt-2 font-mono">
+                <div class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div>
+                DB CONNECTING...
+            </div>
+        </div>
+
+        <div id="view-entrance" class="space-y-4">
+            <div class="mission-card rounded-3xl p-6 md:p-8 shadow-2xl text-center border border-indigo-500/20">
+                <button onclick="showCreateRoom()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-4 rounded-2xl text-xl font-bold mb-6 transition-all shadow-lg active:scale-95">
+                    새로운 방 만들기
+                </button>
+                
+                <div class="flex items-center gap-2 mb-6">
+                    <div class="flex-1 h-[1px] bg-slate-700"></div>
+                    <span class="text-slate-500 text-xs font-bold uppercase">또는 기존 방 참여</span>
+                    <div class="flex-1 h-[1px] bg-slate-700"></div>
+                </div>
+
+                <div class="space-y-4 text-left">
+                    <div>
+                        <label class="text-xs text-slate-400 ml-1 mb-1 block font-bold">방 코드 4자리</label>
+                        <input type="number" id="join-code" placeholder="0000" 
+                               class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 text-center text-xl font-bold tracking-[0.2em] focus:outline-none focus:border-indigo-500 transition-colors">
+                    </div>
+                    
+                    <div>
+                        <label class="text-xs text-slate-400 ml-1 mb-1 block font-bold">본인 이름</label>
+                        <input type="text" id="join-nickname" placeholder="이름 입력" 
+                               class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 text-center text-lg focus:outline-none focus:border-indigo-500 transition-colors">
+                    </div>
+                    
+                    <button onclick="joinRoom()" class="w-full bg-slate-700 hover:bg-slate-600 py-4 rounded-xl font-bold transition-all text-indigo-300 mt-2 shadow-inner active:scale-95">
+                        인증 후 입장하기
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-setup" class="hidden space-y-4">
+            <div class="mission-card rounded-3xl p-6 shadow-2xl border-2 border-indigo-500/50">
+                <div class="text-center mb-6 p-5 bg-indigo-900/40 rounded-2xl relative shadow-inner">
+                    <p class="text-indigo-300 text-[10px] mb-1 uppercase tracking-widest font-bold">방 코드</p>
+                    <h2 id="room-display-large" class="text-5xl title-font text-white tracking-widest">----</h2>
+                    <button onclick="shareRoomLink()" class="mt-4 w-full bg-indigo-500 hover:bg-indigo-400 py-2 rounded-xl text-white font-bold text-sm transition-all flex items-center justify-center gap-2">
+                        <i class="fas fa-share-alt"></i> 카톡 초대 링크 복사
+                    </button>
+                </div>
+
+                <h3 class="text-lg mb-3 flex items-center justify-between">
+                    <span class="text-indigo-200">참가자 등록 (<span id="count" class="text-pink-400 font-bold">0</span>명)</span>
+                </h3>
+                
+                <div class="flex gap-2 mb-4">
+                    <input type="text" id="name-input" placeholder="이름" 
+                           class="flex-1 bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <button onclick="addName()" class="bg-indigo-600 hover:bg-indigo-500 px-5 py-3 rounded-xl font-bold active:scale-95 transition-all">추가</button>
+                </div>
+
+                <div id="name-tags" class="flex flex-wrap gap-2 mb-8 min-h-[50px] p-2 rounded-xl bg-slate-900/30 border border-slate-800"></div>
+
+                <div id="creator-identity-picker" class="hidden mb-6 p-4 bg-slate-800/80 rounded-2xl border border-indigo-500/20 shadow-inner">
+                    <p class="text-xs text-indigo-300 mb-2 font-bold uppercase">방장님(본인) 선택</p>
+                    <select id="creator-name-select" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-3 text-white focus:outline-none focus:border-indigo-500"></select>
+                </div>
+
+                <button id="match-btn" onclick="startMatching()" 
+                        class="w-full bg-gradient-to-r from-indigo-600 to-pink-600 py-4 rounded-2xl text-xl font-bold shadow-lg transform hover:scale-[1.02] active:scale-95 transition-all hidden">
+                    매칭 시작!
+                </button>
+            </div>
+        </div>
+
+        <div id="view-result" class="hidden space-y-4 pb-12">
+            <div class="flex justify-between items-center mb-2 px-1">
+                <h2 class="text-sm font-bold text-indigo-400 tracking-tighter" id="result-room-code">방 코드: ----</h2>
+                <button onclick="location.reload()" class="text-slate-500 text-[10px] uppercase font-bold">나가기</button>
+            </div>
+
+            <div class="bg-indigo-900/40 p-5 rounded-3xl border border-indigo-500/30 mb-6 text-center shadow-xl">
+                <p class="text-white text-lg mb-1"><span id="user-display" class="text-yellow-400 font-bold"></span>님, 환영합니다!</p>
+                <p class="text-indigo-300 text-[10px] opacity-70">본인 이름을 눌러 미션을 확인하세요.</p>
+            </div>
+            
+            <div id="check-grid" class="grid grid-cols-2 gap-3"></div>
+        </div>
+
+        <div id="loading" class="fixed inset-0 bg-slate-950/90 flex items-center justify-center z-[100] transition-opacity duration-300">
+            <div class="bg-slate-900 p-8 rounded-[2rem] flex flex-col items-center gap-4 border border-slate-800 shadow-2xl">
+                <div class="loader"></div>
+                <p class="text-indigo-300 font-bold animate-pulse text-sm" id="loading-text">보안 연결 중...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal" class="fixed inset-0 bg-slate-950/98 z-[70] hidden flex items-center justify-center p-6">
+        <div class="mission-card w-full max-w-sm rounded-[2.5rem] p-8 border-2 border-indigo-500 text-center relative shadow-[0_0_60px_rgba(99,102,241,0.25)]">
+            <p id="modal-owner" class="text-indigo-400 text-lg mb-2 underline decoration-indigo-500 decoration-2 underline-offset-4 font-bold"></p>
+            <p class="text-slate-400 text-xs mb-6 uppercase tracking-widest">당신의 마니또 타겟</p>
+            <div id="modal-target" class="text-5xl title-font text-white mb-8 tracking-widest confidential">---</div>
+            
+            <div class="bg-slate-800/80 rounded-2xl p-6 border border-slate-700 shadow-inner">
+                <p class="text-pink-500 text-xs font-bold mb-3 uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+                    <i class="fas fa-terminal"></i> 비밀 미션
+                </p>
+                <p id="modal-mission" class="text-lg leading-relaxed text-slate-200 confidential font-medium"></p>
+            </div>
+            
+            <p class="text-[10px] text-yellow-500/80 mt-6 font-bold animate-bounce uppercase tracking-tighter">꾹 누르면 내용이 보입니다</p>
+
+            <button onclick="closeModal()" class="mt-8 w-full bg-slate-700 hover:bg-slate-600 py-4 rounded-2xl font-bold transition-all border border-slate-600 active:scale-95 shadow-lg text-sm">
+                닫기
+            </button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // 성민님이 제공하신 전용 Firebase 설정
+        const firebaseConfig = {
+            apiKey: "AIzaSyCs9xNx5rljT_KSQqZdt4KEzzwGEpazdVE",
+            authDomain: "taecho-manitto.firebaseapp.com",
+            projectId: "taecho-manitto",
+            storageBucket: "taecho-manitto.firebasestorage.app",
+            messagingSenderId: "873301716753",
+            appId: "1:873301716753:web:28041c32abbf8bec17e6b0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = "taecho-manitto-v2";
+
+        let names = [];
+        let roomData = null;
+        let currentRoomId = null;
+        let myNickname = null;
+        let unsubscribeRoom = null;
+
+        const missions = [
+            "타겟이 말할 때마다 무조건 '와, 진짜요?'라고 5회 리액션하기",
+            "타겟의 신발 한 짝 몰래 숨겼다가 30분 뒤에 모른 척 찾아주기",
+            "타겟에게 '코디가 마치 자바의 정석 같네요'라고 칭찬하기",
+            "타겟이 마시는 음료수에 빨대를 몰래 2개 꽂아두기",
+            "타겟과 대화할 때 1분 동안 눈을 한 번도 안 깜빡이고 쳐다보기",
+            "타겟의 뒷모습을 찍어 '뒷모습이 시니어 개발자 같음'이라며 단톡방 공유",
+            "타겟이 자리를 비우면 그 자리에 앉아서 올 때까지 기다리기",
+            "타겟에게 '전생에 인텔리제이였나요?'라고 뜬금없이 묻기",
+            "타겟이 먹고 있는 안주를 가장 얄밉게 뺏어 먹기",
+            "타겟 옆에 앉아서 갑자기 '저기... 혹시 도(道)를 아십니까?'라고 묻기",
+            "타겟이 웃을 때마다 옆에서 박수 3번씩 크게 쳐주기",
+            "타겟의 이름을 엠티 끝날 때까지 '대장님'으로 부르기",
+            "타겟 몰래 등에 '저는 버그입니다' 포스트잇 붙이기 (3분 유지)",
+            "타겟에게 손가락 하트 날린 후 '아, 잘못 날렸네'라고 말하기",
+            "타겟의 컵에 물이 절반 이하로 떨어지면 묻지 않고 가득 채워주기"
+        ];
+
+        async function initAuth() {
+            try {
+                await signInAnonymously(auth);
+            } catch (error) {
+                console.error("인증 에러:", error);
+                alert("인증에 실패했습니다. Firebase 콘솔에서 익명 로그인을 켜주세요.");
+            }
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            const status = document.getElementById('connection-status');
+            if (user) {
+                status.innerHTML = `<div class="w-1.5 h-1.5 rounded-full bg-green-500"></div> DB 연결됨`;
+                status.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-[10px] mt-2 font-mono";
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                const rCode = urlParams.get('room');
+                if (rCode && rCode.length === 4) {
+                    document.getElementById('join-code').value = rCode;
+                }
+                toggleLoading(false);
+            } else {
+                status.innerHTML = `<div class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div> 연결 중...`;
+                status.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-[10px] mt-2 font-mono";
+            }
+        });
+
+        initAuth();
+
+        window.showCreateRoom = () => {
+            currentRoomId = Math.floor(1000 + Math.random() * 9000).toString();
+            document.getElementById('view-entrance').classList.add('hidden');
+            document.getElementById('view-setup').classList.remove('hidden');
+            document.getElementById('room-display-large').innerText = currentRoomId;
+        };
+
+        window.shareRoomLink = () => {
+            const shareUrl = window.location.href.split('?')[0] + `?room=${currentRoomId}`;
+            const message = `🤫 태초마을 마니또 초대장!\n\n방 코드: ${currentRoomId}\n\n링크: ${shareUrl}`;
+
+            const textarea = document.createElement('textarea');
+            textarea.value = message;
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                alert("초대 메시지가 복사되었습니다!");
+            } catch (err) {
+                prompt("복사에 실패했습니다. 아래 내용을 복사해서 공유하세요:", message);
+            }
+            document.body.removeChild(textarea);
+        };
+
+        window.addName = () => {
+            const input = document.getElementById('name-input');
+            const val = input.value.trim();
+            if (val && !names.includes(val)) {
+                names.push(val);
+                input.value = '';
+                renderNames();
+            }
+        };
+
+        window.removeName = (n) => {
+            names = names.filter(x => x !== n);
+            renderNames();
+        };
+
+        function renderNames() {
+            const container = document.getElementById('name-tags');
+            const count = document.getElementById('count');
+            const btn = document.getElementById('match-btn');
+            const picker = document.getElementById('creator-identity-picker');
+            const select = document.getElementById('creator-name-select');
+            
+            count.innerText = names.length;
+            container.innerHTML = names.map(n => `
+                <div class="bg-indigo-900/50 border border-indigo-400/50 text-indigo-100 px-3 py-1.5 rounded-xl flex items-center gap-2">
+                    <span class="text-sm">${n}</span>
+                    <button onclick="window.removeName('${n}')" class="text-pink-500 font-bold p-1">×</button>
+                </div>
+            `).join('');
+
+            if (names.length >= 3) {
+                btn.classList.remove('hidden');
+                picker.classList.remove('hidden');
+                select.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join('');
+            } else {
+                btn.classList.add('hidden');
+                picker.classList.add('hidden');
+            }
+        }
+
+        window.startMatching = async () => {
+            if (!auth.currentUser) return;
+            myNickname = document.getElementById('creator-name-select').value;
+            toggleLoading(true, "방 생성 중...");
+
+            let shuffled = [...names];
+            while (true) {
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                if (shuffled.every((n, i) => n !== names[i])) break;
+            }
+
+            const assignments = names.map((name, i) => ({
+                manitto: name,
+                target: shuffled[i],
+                mission: missions[Math.floor(Math.random() * missions.length)],
+                checked: false
+            }));
+
+            try {
+                const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
+                await setDoc(roomRef, { assignments, createdAt: new Date().toISOString() });
+                observeRoom(currentRoomId);
+            } catch (e) {
+                console.error(e);
+                alert("권한 오류! Firestore 규칙을 확인하세요.");
+                toggleLoading(false);
+            }
+        };
+
+        window.joinRoom = async () => {
+            const codeInput = document.getElementById('join-code').value;
+            const nickInput = document.getElementById('join-nickname').value.trim();
+            
+            if (codeInput.length !== 4 || !nickInput) {
+                alert("방 코드와 이름을 모두 입력하세요.");
+                return;
+            }
+            
+            toggleLoading(true, "입장 중...");
+            try {
+                const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', codeInput);
+                const snap = await getDoc(roomRef);
+                
+                if (snap.exists()) {
+                    const data = snap.data();
+                    if (data.assignments.some(a => a.manitto === nickInput)) {
+                        currentRoomId = codeInput;
+                        myNickname = nickInput;
+                        observeRoom(codeInput);
+                    } else {
+                        alert("명단에 이름이 없습니다.");
+                        toggleLoading(false);
+                    }
+                } else {
+                    alert("방 코드가 틀렸습니다.");
+                    toggleLoading(false);
+                }
+            } catch (e) {
+                alert("오류 발생!");
+                toggleLoading(false);
+            }
+        };
+
+        function observeRoom(roomId) {
+            if (unsubscribeRoom) unsubscribeRoom();
+            const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomId);
+            
+            unsubscribeRoom = onSnapshot(roomRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    roomData = docSnap.data();
+                    renderResultView();
+                }
+            });
+        }
+
+        function renderResultView() {
+            document.getElementById('view-entrance').classList.add('hidden');
+            document.getElementById('view-setup').classList.add('hidden');
+            document.getElementById('view-result').classList.remove('hidden');
+            
+            document.getElementById('result-room-code').innerText = `방 코드: ${currentRoomId}`;
+            document.getElementById('user-display').innerText = myNickname;
+
+            const grid = document.getElementById('check-grid');
+            grid.innerHTML = roomData.assignments.map((d, i) => {
+                const isMe = d.manitto === myNickname;
+                return `
+                    <button onclick="window.handleCardClick(${i})" 
+                            class="p-5 rounded-[1.5rem] border-2 transition-all flex flex-col items-center justify-center gap-1.5 shadow-lg active:scale-95
+                            ${isMe ? (d.checked ? 'border-yellow-500 bg-yellow-900/30 text-yellow-100' : 'my-card text-yellow-50 neon-glow') : 
+                                    (d.checked ? 'border-slate-800 bg-slate-900/60 text-slate-600 opacity-60' : 'border-indigo-500/10 bg-slate-800/40 text-slate-500') }">
+                        <span class="text-[8px] opacity-60 uppercase font-bold">${d.checked ? 'Checked' : (isMe ? '본인' : '대기')}</span>
+                        <span class="text-xl font-bold tracking-tight">${d.manitto}</span>
+                        ${isMe ? '<i class="fas fa-crown text-yellow-400 text-[10px] mt-0.5"></i>' : '<i class="fas fa-lock text-[8px] mt-0.5 opacity-20"></i>'}
+                    </button>
+                `;
+            }).join('');
+            toggleLoading(false);
+        }
+
+        window.handleCardClick = async (idx) => {
+            const item = roomData.assignments[idx];
+            if (item.manitto !== myNickname) {
+                alert("자기 미션만 볼 수 있어요!");
+                return;
+            }
+
+            document.getElementById('modal-owner').innerText = `${item.manitto}님의 비밀 임무`;
+            document.getElementById('modal-target').innerText = item.target;
+            document.getElementById('modal-mission').innerText = item.mission;
+            document.getElementById('modal').classList.remove('hidden');
+
+            if (!item.checked) {
+                try {
+                    const newAssignments = [...roomData.assignments];
+                    newAssignments[idx].checked = true;
+                    const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
+                    await setDoc(roomRef, { assignments: newAssignments }, { merge: true });
+                } catch (e) {
+                    console.error("업데이트 에러:", e);
+                }
+            }
+        };
+
+        window.closeModal = () => document.getElementById('modal').classList.add('hidden');
+        
+        function toggleLoading(show, text = "보안 연결 중...") { 
+            const l = document.getElementById('loading');
+            document.getElementById('loading-text').innerText = text;
+            l.style.opacity = show ? "1" : "0";
+            setTimeout(() => { l.classList.toggle('hidden', !show); }, show ? 0 : 300);
+        }
+
+        document.getElementById('name-input')?.addEventListener('keypress', e => e.key === 'Enter' && window.addName());
+    </script>
+</body>
+</html>
