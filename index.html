@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>태초마을 MT: 킹받는 마니또 (Cloud)</title>
+    <title>태초마을 MT: 보안 마니또</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></script>
     <style>
@@ -65,51 +65,61 @@
 <body class="p-4 md:p-6">
 
     <div class="max-w-md mx-auto">
+        <!-- Header -->
         <div class="text-center mb-8 mt-4">
-            <h1 class="title-font text-4xl md:text-5xl text-indigo-400 mb-2 tracking-tighter">MANITTO <span class="text-pink-500">PRO</span></h1>
-            <p class="text-indigo-200 opacity-80 italic text-sm">"태초마을 전용 프로젝트 연결됨"</p>
+            <h1 class="title-font text-4xl md:text-5xl text-indigo-400 mb-2 tracking-tighter">MANITTO <span class="text-pink-500">SECURE</span></h1>
+            <p class="text-indigo-200 opacity-80 italic text-sm">"현실 엠티 미션 & 보안 시스템"</p>
             <div id="connection-status" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-[10px] mt-2 font-mono">
                 <div class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div>
                 DB CONNECTING...
             </div>
         </div>
 
+        <!-- Step 0: Entrance -->
         <div id="view-entrance" class="space-y-4">
             <div class="mission-card rounded-3xl p-6 md:p-8 shadow-2xl text-center border border-indigo-500/20">
-                <button onclick="showCreateRoom()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-4 rounded-2xl text-xl font-bold mb-6 transition-all shadow-lg active:scale-95">
+                <button onclick="showCreateRoom()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-4 rounded-2xl text-xl font-bold mb-6 shadow-lg active:scale-95">
                     새로운 방 만들기
                 </button>
                 
                 <div class="flex items-center gap-2 mb-6">
                     <div class="flex-1 h-[1px] bg-slate-700"></div>
-                    <span class="text-slate-500 text-xs font-bold uppercase">또는 기존 방 참여</span>
+                    <span class="text-slate-500 text-xs font-bold uppercase font-mono">JOIN ROOM</span>
                     <div class="flex-1 h-[1px] bg-slate-700"></div>
                 </div>
 
                 <div class="space-y-4 text-left">
                     <div>
-                        <label class="text-xs text-slate-400 ml-1 mb-1 block font-bold">방 코드 4자리</label>
-                        <input type="number" id="join-code" placeholder="0000" 
+                        <label class="text-xs text-slate-400 ml-1 mb-1 block font-bold uppercase tracking-wider">Room Code</label>
+                        <input type="number" id="join-code" placeholder="방 코드 4자리" 
                                class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 text-center text-xl font-bold tracking-[0.2em] focus:outline-none focus:border-indigo-500 transition-colors">
                     </div>
                     
                     <div>
-                        <label class="text-xs text-slate-400 ml-1 mb-1 block font-bold">본인 이름</label>
+                        <label class="text-xs text-slate-400 ml-1 mb-1 block font-bold uppercase tracking-wider">Your Name</label>
                         <input type="text" id="join-nickname" placeholder="이름 입력" 
                                class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 text-center text-lg focus:outline-none focus:border-indigo-500 transition-colors">
                     </div>
+
+                    <div>
+                        <label class="text-xs text-slate-400 ml-1 mb-1 block font-bold uppercase tracking-wider">Password</label>
+                        <input type="password" id="join-pw" placeholder="비밀번호 입력" 
+                               inputmode="numeric"
+                               class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 text-center text-lg focus:outline-none focus:border-indigo-500 transition-colors">
+                    </div>
                     
-                    <button onclick="joinRoom()" class="w-full bg-slate-700 hover:bg-slate-600 py-4 rounded-xl font-bold transition-all text-indigo-300 mt-2 shadow-inner active:scale-95">
+                    <button onclick="joinRoom()" class="w-full bg-slate-700 hover:bg-slate-600 py-4 rounded-xl font-bold transition-all text-indigo-300 mt-2 shadow-inner active:scale-95 uppercase tracking-widest text-sm">
                         인증 후 입장하기
                     </button>
                 </div>
             </div>
         </div>
 
+        <!-- Step 1: Setup (Creator) -->
         <div id="view-setup" class="hidden space-y-4">
             <div class="mission-card rounded-3xl p-6 shadow-2xl border-2 border-indigo-500/50">
                 <div class="text-center mb-6 p-5 bg-indigo-900/40 rounded-2xl relative shadow-inner">
-                    <p class="text-indigo-300 text-[10px] mb-1 uppercase tracking-widest font-bold">방 코드</p>
+                    <p class="text-indigo-300 text-[10px] mb-1 uppercase tracking-widest font-bold">인벤토리 코드</p>
                     <h2 id="room-display-large" class="text-5xl title-font text-white tracking-widest">----</h2>
                     <button onclick="shareRoomLink()" class="mt-4 w-full bg-indigo-500 hover:bg-indigo-400 py-2 rounded-xl text-white font-bold text-sm transition-all flex items-center justify-center gap-2">
                         <i class="fas fa-share-alt"></i> 카톡 초대 링크 복사
@@ -128,54 +138,61 @@
 
                 <div id="name-tags" class="flex flex-wrap gap-2 mb-8 min-h-[50px] p-2 rounded-xl bg-slate-900/30 border border-slate-800"></div>
 
-                <div id="creator-identity-picker" class="hidden mb-6 p-4 bg-slate-800/80 rounded-2xl border border-indigo-500/20 shadow-inner">
-                    <p class="text-xs text-indigo-300 mb-2 font-bold uppercase">방장님(본인) 선택</p>
-                    <select id="creator-name-select" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-3 text-white focus:outline-none focus:border-indigo-500"></select>
-                </div>
-
                 <button id="match-btn" onclick="startMatching()" 
                         class="w-full bg-gradient-to-r from-indigo-600 to-pink-600 py-4 rounded-2xl text-xl font-bold shadow-lg transform hover:scale-[1.02] active:scale-95 transition-all hidden">
-                    매칭 시작!
+                    매칭 시작 및 비번 생성
                 </button>
             </div>
         </div>
 
+        <!-- Step 2: Result View (Players) -->
         <div id="view-result" class="hidden space-y-4 pb-12">
             <div class="flex justify-between items-center mb-2 px-1">
-                <h2 class="text-sm font-bold text-indigo-400 tracking-tighter" id="result-room-code">방 코드: ----</h2>
-                <button onclick="location.reload()" class="text-slate-500 text-[10px] uppercase font-bold">나가기</button>
+                <h2 class="text-sm font-bold text-indigo-400 tracking-tighter" id="result-room-code">ROOM: ----</h2>
+                <button onclick="location.reload()" class="text-slate-500 text-[10px] font-bold underline uppercase">Logout / Exit</button>
+            </div>
+
+            <!-- 관리자 전용 비밀번호 확인 패널 -->
+            <div id="admin-panel" class="hidden mission-card rounded-3xl p-5 border-2 border-pink-500/50 mb-6 shadow-xl">
+                <h3 class="text-pink-400 text-center font-bold mb-4 flex items-center justify-center gap-2">
+                    <i class="fas fa-user-shield"></i> 관리자 대시보드
+                </h3>
+                <p class="text-[11px] text-slate-400 mb-3 text-center">비밀번호를 각 동기에게 개별적으로 알려주세요!</p>
+                <div id="pw-list" class="grid grid-cols-2 gap-2 text-xs"></div>
             </div>
 
             <div class="bg-indigo-900/40 p-5 rounded-3xl border border-indigo-500/30 mb-6 text-center shadow-xl">
-                <p class="text-white text-lg mb-1"><span id="user-display" class="text-yellow-400 font-bold"></span>님, 환영합니다!</p>
-                <p class="text-indigo-300 text-[10px] opacity-70">본인 이름을 눌러 미션을 확인하세요.</p>
+                <p class="text-white text-lg mb-1 font-bold"><span id="user-display" class="text-yellow-400"></span>님, 접속 성공!</p>
+                <p class="text-indigo-300 text-[10px] opacity-70">자기 이름을 눌러 미션을 확인하세요.</p>
             </div>
             
             <div id="check-grid" class="grid grid-cols-2 gap-3"></div>
         </div>
 
+        <!-- Loading Overlay -->
         <div id="loading" class="fixed inset-0 bg-slate-950/90 flex items-center justify-center z-[100] transition-opacity duration-300">
             <div class="bg-slate-900 p-8 rounded-[2rem] flex flex-col items-center gap-4 border border-slate-800 shadow-2xl">
                 <div class="loader"></div>
-                <p class="text-indigo-300 font-bold animate-pulse text-sm" id="loading-text">보안 연결 중...</p>
+                <p class="text-indigo-300 font-bold animate-pulse text-sm" id="loading-text">보안 연결 수립 중...</p>
             </div>
         </div>
     </div>
 
+    <!-- Secret View Modal -->
     <div id="modal" class="fixed inset-0 bg-slate-950/98 z-[70] hidden flex items-center justify-center p-6">
         <div class="mission-card w-full max-w-sm rounded-[2.5rem] p-8 border-2 border-indigo-500 text-center relative shadow-[0_0_60px_rgba(99,102,241,0.25)]">
             <p id="modal-owner" class="text-indigo-400 text-lg mb-2 underline decoration-indigo-500 decoration-2 underline-offset-4 font-bold"></p>
-            <p class="text-slate-400 text-xs mb-6 uppercase tracking-widest">당신의 마니또 타겟</p>
+            <p class="text-slate-400 text-xs mb-6 uppercase tracking-widest font-bold">Your Mission Target</p>
             <div id="modal-target" class="text-5xl title-font text-white mb-8 tracking-widest confidential">---</div>
             
             <div class="bg-slate-800/80 rounded-2xl p-6 border border-slate-700 shadow-inner">
                 <p class="text-pink-500 text-xs font-bold mb-3 uppercase tracking-[0.2em] flex items-center justify-center gap-2">
-                    <i class="fas fa-terminal"></i> 비밀 미션
+                    <i class="fas fa-mask"></i> Secret Mission
                 </p>
                 <p id="modal-mission" class="text-lg leading-relaxed text-slate-200 confidential font-medium"></p>
             </div>
             
-            <p class="text-[10px] text-yellow-500/80 mt-6 font-bold animate-bounce uppercase tracking-tighter">꾹 누르면 내용이 보입니다</p>
+            <p class="text-[10px] text-yellow-500/80 mt-6 font-bold animate-bounce uppercase tracking-tighter">화면을 꾹 누르면 내용이 보입니다</p>
 
             <button onclick="closeModal()" class="mt-8 w-full bg-slate-700 hover:bg-slate-600 py-4 rounded-2xl font-bold transition-all border border-slate-600 active:scale-95 shadow-lg text-sm">
                 닫기
@@ -188,7 +205,6 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // 성민님이 제공하신 전용 Firebase 설정
         const firebaseConfig = {
             apiKey: "AIzaSyCs9xNx5rljT_KSQqZdt4KEzzwGEpazdVE",
             authDomain: "taecho-manitto.firebaseapp.com",
@@ -201,56 +217,60 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const appId = "taecho-manitto-v2";
+        const appId = "taecho-manitto-v-hidden-pw";
 
         let names = [];
         let roomData = null;
         let currentRoomId = null;
         let myNickname = null;
+        let isAdmin = false;
         let unsubscribeRoom = null;
 
         const missions = [
-            "타겟이 말할 때마다 무조건 '와, 진짜요?'라고 5회 리액션하기",
-            "타겟의 신발 한 짝 몰래 숨겼다가 30분 뒤에 모른 척 찾아주기",
-            "타겟에게 '코디가 마치 자바의 정석 같네요'라고 칭찬하기",
-            "타겟이 마시는 음료수에 빨대를 몰래 2개 꽂아두기",
-            "타겟과 대화할 때 1분 동안 눈을 한 번도 안 깜빡이고 쳐다보기",
-            "타겟의 뒷모습을 찍어 '뒷모습이 시니어 개발자 같음'이라며 단톡방 공유",
-            "타겟이 자리를 비우면 그 자리에 앉아서 올 때까지 기다리기",
-            "타겟에게 '전생에 인텔리제이였나요?'라고 뜬금없이 묻기",
-            "타겟이 먹고 있는 안주를 가장 얄밉게 뺏어 먹기",
-            "타겟 옆에 앉아서 갑자기 '저기... 혹시 도(道)를 아십니까?'라고 묻기",
-            "타겟이 웃을 때마다 옆에서 박수 3번씩 크게 쳐주기",
-            "타겟의 이름을 엠티 끝날 때까지 '대장님'으로 부르기",
-            "타겟 몰래 등에 '저는 버그입니다' 포스트잇 붙이기 (3분 유지)",
-            "타겟에게 손가락 하트 날린 후 '아, 잘못 날렸네'라고 말하기",
-            "타겟의 컵에 물이 절반 이하로 떨어지면 묻지 않고 가득 채워주기"
+            "타겟이 술이나 음료 마실 때마다 옆에서 '캬~' 소리 크게 내주기",
+            "타겟의 신발 한 짝 몰래 숨겼다가 20분 뒤에 찾아주기",
+            "타겟에게 오늘 찍은 사진 중 인생샷 하나 정성스럽게 찍어주기",
+            "타겟이 하는 모든 말에 5분 동안 '대박', '진짜?'라며 폭풍 리액션하기",
+            "타겟의 물잔이 비지 않게 아무도 모르게 3번 이상 가득 채워주기",
+            "타겟 주위를 아무 말 없이 무표정으로 한 바퀴 크게 돌고 떠나기",
+            "타겟에게 갑자기 가서 '오늘 향기 되게 좋으시네요'라고 진지하게 말하기",
+            "타겟이 웃을 때마다 옆에서 무지성으로 박수 3번씩 크게 쳐주기",
+            "타겟에게 편의점 간식(젤리, 껌 등)을 두 손으로 정중하게 진상하기",
+            "타겟 옆에 앉아서 갑자기 '저기... 혹시 MBTI가 C.U.T.E인가요?'라고 묻기",
+            "타겟이 자리를 비우면 그 의자를 냅킨으로 과할 정도로 정성껏 닦아두기",
+            "타겟에게 손가락 하트 날린 후, 반응하면 '아, 잘못 날렸네'라고 정색하기",
+            "타겟의 어깨를 갑자기 5초 동안 아주 시원하게 안마해주기",
+            "타겟이 먹고 있는 안주 중 하나를 세상에서 제일 얄밉게 뺏어 먹기",
+            "타겟의 이름 뒤에 무조건 '대장님' 혹은 '주인님' 붙여서 부르기",
+            "타겟에게 가서 뜬금없이 '사실... 아까부터 계속 멋지다고 생각했어요'라고 하기",
+            "타겟이 덥거나 추워 보이면 부채질해주거나 겉옷 챙겨주는 척하기",
+            "타겟과 눈이 마주치면 3초 동안 윙크 발사하고 시선 피하기",
+            "타겟의 컵이나 수저를 아무도 모르게 냅킨으로 깨끗이 닦아놓기",
+            "타겟이 말할 때마다 두 손으로 입을 가리고 '어머나!'라며 감탄하기",
+            "타겟에게 슬그머니 가서 '오늘 스타일이 완전 연예인 같으시네요'라고 칭찬하기",
+            "타겟 주변을 3바퀴 빙글빙글 돌고 아무 일 없었다는 듯이 떠나기",
+            "타겟이 화장실 갈 때 문 앞에서 '화이팅! 기다릴게요!'라고 말하기",
+            "타겟이 웃긴 얘기를 하면 무조건 세상에서 제일 크게 웃어주기",
+            "타겟에게 맛있는 쌈을 하나 싸서 입에 직접 넣어주기",
+            "타겟 몰래 등에 '저는 마니또가 있습니다' 포스트잇 붙이고 3분 버티기",
+            "타겟이 뭐 할 때마다 옆에서 '오~ 대박~' 하면서 추임새 넣기",
+            "타겟에게 갑자기 가위바위보 신청해서 3번 연속으로 져주기",
+            "타겟의 이름으로 감동적인 삼행시 지어서 귓속말로 속삭여주기",
+            "타겟에게 '오늘 눈빛이 참 치명적이시네요'라고 진지하게 말하기"
         ];
 
         async function initAuth() {
-            try {
-                await signInAnonymously(auth);
-            } catch (error) {
-                console.error("인증 에러:", error);
-                alert("인증에 실패했습니다. Firebase 콘솔에서 익명 로그인을 켜주세요.");
-            }
+            try { await signInAnonymously(auth); } catch (e) { console.error(e); }
         }
 
         onAuthStateChanged(auth, (user) => {
             const status = document.getElementById('connection-status');
             if (user) {
-                status.innerHTML = `<div class="w-1.5 h-1.5 rounded-full bg-green-500"></div> DB 연결됨`;
+                status.innerHTML = `<div class="w-1.5 h-1.5 rounded-full bg-green-500"></div> DB CONNECTED`;
                 status.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-[10px] mt-2 font-mono";
-                
-                const urlParams = new URLSearchParams(window.location.search);
-                const rCode = urlParams.get('room');
-                if (rCode && rCode.length === 4) {
-                    document.getElementById('join-code').value = rCode;
-                }
+                const rCode = new URLSearchParams(window.location.search).get('room');
+                if (rCode) document.getElementById('join-code').value = rCode;
                 toggleLoading(false);
-            } else {
-                status.innerHTML = `<div class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div> 연결 중...`;
-                status.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-[10px] mt-2 font-mono";
             }
         });
 
@@ -265,147 +285,132 @@
 
         window.shareRoomLink = () => {
             const shareUrl = window.location.href.split('?')[0] + `?room=${currentRoomId}`;
-            const message = `🤫 태초마을 마니또 초대장!\n\n방 코드: ${currentRoomId}\n\n링크: ${shareUrl}`;
-
+            const message = `🤫 태초마을 마니또 보안 초대장!\n방 코드: ${currentRoomId}\n링크: ${shareUrl}`;
             const textarea = document.createElement('textarea');
-            textarea.value = message;
-            document.body.appendChild(textarea);
-            textarea.select();
-            
-            try {
-                document.execCommand('copy');
-                alert("초대 메시지가 복사되었습니다!");
-            } catch (err) {
-                prompt("복사에 실패했습니다. 아래 내용을 복사해서 공유하세요:", message);
-            }
+            textarea.value = message; document.body.appendChild(textarea); textarea.select();
+            try { document.execCommand('copy'); alert("초대 링크가 복사되었습니다!"); } catch (err) { prompt("복사해서 공유하세요:", message); }
             document.body.removeChild(textarea);
         };
 
         window.addName = () => {
             const input = document.getElementById('name-input');
             const val = input.value.trim();
-            if (val && !names.includes(val)) {
-                names.push(val);
-                input.value = '';
-                renderNames();
-            }
+            if (val && !names.includes(val)) { names.push(val); input.value = ''; renderNames(); }
         };
 
-        window.removeName = (n) => {
-            names = names.filter(x => x !== n);
-            renderNames();
-        };
+        window.removeName = (n) => { names = names.filter(x => x !== n); renderNames(); };
 
         function renderNames() {
             const container = document.getElementById('name-tags');
-            const count = document.getElementById('count');
-            const btn = document.getElementById('match-btn');
-            const picker = document.getElementById('creator-identity-picker');
-            const select = document.getElementById('creator-name-select');
-            
-            count.innerText = names.length;
+            document.getElementById('count').innerText = names.length;
             container.innerHTML = names.map(n => `
-                <div class="bg-indigo-900/50 border border-indigo-400/50 text-indigo-100 px-3 py-1.5 rounded-xl flex items-center gap-2">
-                    <span class="text-sm">${n}</span>
+                <div class="bg-indigo-900/50 border border-indigo-400/50 text-indigo-100 px-3 py-1.5 rounded-xl flex items-center gap-2 animate-in fade-in">
+                    <span class="text-sm font-bold">${n}</span>
                     <button onclick="window.removeName('${n}')" class="text-pink-500 font-bold p-1">×</button>
                 </div>
             `).join('');
-
-            if (names.length >= 3) {
-                btn.classList.remove('hidden');
-                picker.classList.remove('hidden');
-                select.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join('');
-            } else {
-                btn.classList.add('hidden');
-                picker.classList.add('hidden');
-            }
+            if (names.length >= 3) document.getElementById('match-btn').classList.remove('hidden');
         }
 
         window.startMatching = async () => {
             if (!auth.currentUser) return;
-            myNickname = document.getElementById('creator-name-select').value;
-            toggleLoading(true, "방 생성 중...");
+            toggleLoading(true, "마니또 매칭 중...");
 
-            let shuffled = [...names];
+            let shuffledNames = [...names];
             while (true) {
-                for (let i = shuffled.length - 1; i > 0; i--) {
+                for (let i = shuffledNames.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
-                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                    [shuffledNames[i], shuffledNames[j]] = [shuffledNames[j], shuffledNames[i]];
                 }
-                if (shuffled.every((n, i) => n !== names[i])) break;
+                if (shuffledNames.every((n, i) => n !== names[i])) break;
+            }
+
+            let shuffledMissions = [...missions];
+            for (let i = shuffledMissions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledMissions[i], shuffledMissions[j]] = [shuffledMissions[j], shuffledMissions[i]];
             }
 
             const assignments = names.map((name, i) => ({
                 manitto: name,
-                target: shuffled[i],
-                mission: missions[Math.floor(Math.random() * missions.length)],
+                target: shuffledNames[i],
+                mission: shuffledMissions[i],
+                password: Math.floor(1000 + Math.random() * 9000).toString(),
                 checked: false
             }));
 
             try {
                 const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
                 await setDoc(roomRef, { assignments, createdAt: new Date().toISOString() });
-                observeRoom(currentRoomId);
-            } catch (e) {
-                console.error(e);
-                alert("권한 오류! Firestore 규칙을 확인하세요.");
-                toggleLoading(false);
-            }
+                alert(`매칭 완료! 방장은 본인만의 비밀번호(7777)로 로그인하여 동기들의 비번을 알려주세요.`);
+                location.reload();
+            } catch (e) { alert("생성 실패!"); toggleLoading(false); }
         };
 
         window.joinRoom = async () => {
             const codeInput = document.getElementById('join-code').value;
             const nickInput = document.getElementById('join-nickname').value.trim();
+            const pwInput = document.getElementById('join-pw').value.trim();
             
-            if (codeInput.length !== 4 || !nickInput) {
-                alert("방 코드와 이름을 모두 입력하세요.");
+            if (codeInput.length !== 4 || !nickInput || !pwInput) {
+                alert("정보를 모두 입력하세요.");
                 return;
             }
             
-            toggleLoading(true, "입장 중...");
+            toggleLoading(true, "인증 중...");
             try {
                 const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', codeInput);
                 const snap = await getDoc(roomRef);
                 
                 if (snap.exists()) {
                     const data = snap.data();
-                    if (data.assignments.some(a => a.manitto === nickInput)) {
-                        currentRoomId = codeInput;
+                    
+                    // 🔑 마스터키 (7777)
+                    if (pwInput === "7777") {
+                        isAdmin = true;
                         myNickname = nickInput;
-                        observeRoom(codeInput);
+                        currentRoomId = codeInput;
+                        roomData = data;
+                        renderResultView();
+                        return;
+                    }
+
+                    const userMatch = data.assignments.find(a => a.manitto === nickInput && a.password === pwInput);
+                    if (userMatch) {
+                        isAdmin = false;
+                        myNickname = nickInput;
+                        currentRoomId = codeInput;
+                        roomData = data;
+                        renderResultView();
                     } else {
-                        alert("명단에 이름이 없습니다.");
+                        alert("이름 또는 비밀번호가 틀렸습니다!");
                         toggleLoading(false);
                     }
                 } else {
-                    alert("방 코드가 틀렸습니다.");
+                    alert("방 코드가 올바르지 않습니다.");
                     toggleLoading(false);
                 }
-            } catch (e) {
-                alert("오류 발생!");
-                toggleLoading(false);
-            }
+            } catch (e) { alert("인증 실패!"); toggleLoading(false); }
         };
-
-        function observeRoom(roomId) {
-            if (unsubscribeRoom) unsubscribeRoom();
-            const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomId);
-            
-            unsubscribeRoom = onSnapshot(roomRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    roomData = docSnap.data();
-                    renderResultView();
-                }
-            });
-        }
 
         function renderResultView() {
             document.getElementById('view-entrance').classList.add('hidden');
             document.getElementById('view-setup').classList.add('hidden');
             document.getElementById('view-result').classList.remove('hidden');
             
-            document.getElementById('result-room-code').innerText = `방 코드: ${currentRoomId}`;
+            document.getElementById('result-room-code').innerText = `ROOM: ${currentRoomId}`;
             document.getElementById('user-display').innerText = myNickname;
+
+            if (isAdmin) {
+                const adminPanel = document.getElementById('admin-panel');
+                adminPanel.classList.remove('hidden');
+                document.getElementById('pw-list').innerHTML = roomData.assignments.map(a => `
+                    <div class="bg-slate-800/80 p-2 rounded border border-slate-700 flex justify-between items-center">
+                        <span class="text-indigo-200">${a.manitto}</span>
+                        <span class="text-pink-400 font-mono font-bold">${a.password}</span>
+                    </div>
+                `).join('');
+            }
 
             const grid = document.getElementById('check-grid');
             grid.innerHTML = roomData.assignments.map((d, i) => {
@@ -413,23 +418,27 @@
                 return `
                     <button onclick="window.handleCardClick(${i})" 
                             class="p-5 rounded-[1.5rem] border-2 transition-all flex flex-col items-center justify-center gap-1.5 shadow-lg active:scale-95
-                            ${isMe ? (d.checked ? 'border-yellow-500 bg-yellow-900/30 text-yellow-100' : 'my-card text-yellow-50 neon-glow') : 
+                            ${isMe ? (d.checked ? 'border-yellow-500 bg-yellow-900/30 text-yellow-100 font-bold' : 'my-card text-yellow-50 neon-glow font-bold') : 
                                     (d.checked ? 'border-slate-800 bg-slate-900/60 text-slate-600 opacity-60' : 'border-indigo-500/10 bg-slate-800/40 text-slate-500') }">
-                        <span class="text-[8px] opacity-60 uppercase font-bold">${d.checked ? 'Checked' : (isMe ? '본인' : '대기')}</span>
-                        <span class="text-xl font-bold tracking-tight">${d.manitto}</span>
-                        ${isMe ? '<i class="fas fa-crown text-yellow-400 text-[10px] mt-0.5"></i>' : '<i class="fas fa-lock text-[8px] mt-0.5 opacity-20"></i>'}
+                        <span class="text-[8px] opacity-60 uppercase font-bold tracking-widest">${d.checked ? 'Completed' : (isMe ? 'CLICK ME' : 'Hidden')}</span>
+                        <span class="text-xl tracking-tight">${d.manitto}</span>
+                        ${isMe ? '<i class="fas fa-star text-yellow-400 text-[10px] mt-0.5 animate-pulse"></i>' : '<i class="fas fa-lock text-[8px] mt-0.5 opacity-20"></i>'}
                     </button>
                 `;
             }).join('');
+
+            if (unsubscribeRoom) unsubscribeRoom();
+            unsubscribeRoom = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId), (docSnap) => {
+                if (docSnap.exists()) roomData = docSnap.data();
+            });
+
             toggleLoading(false);
         }
 
         window.handleCardClick = async (idx) => {
+            if (isAdmin) return alert("관리자는 미션을 볼 수 없습니다. 비밀번호만 공유해주세요!");
             const item = roomData.assignments[idx];
-            if (item.manitto !== myNickname) {
-                alert("자기 미션만 볼 수 있어요!");
-                return;
-            }
+            if (item.manitto !== myNickname) return alert("본인 카드만 열 수 있습니다!");
 
             document.getElementById('modal-owner').innerText = `${item.manitto}님의 비밀 임무`;
             document.getElementById('modal-target').innerText = item.target;
@@ -440,23 +449,18 @@
                 try {
                     const newAssignments = [...roomData.assignments];
                     newAssignments[idx].checked = true;
-                    const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
-                    await setDoc(roomRef, { assignments: newAssignments }, { merge: true });
-                } catch (e) {
-                    console.error("업데이트 에러:", e);
-                }
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId), { assignments: newAssignments }, { merge: true });
+                } catch (e) { console.error(e); }
             }
         };
 
         window.closeModal = () => document.getElementById('modal').classList.add('hidden');
-        
         function toggleLoading(show, text = "보안 연결 중...") { 
             const l = document.getElementById('loading');
             document.getElementById('loading-text').innerText = text;
             l.style.opacity = show ? "1" : "0";
             setTimeout(() => { l.classList.toggle('hidden', !show); }, show ? 0 : 300);
         }
-
         document.getElementById('name-input')?.addEventListener('keypress', e => e.key === 'Enter' && window.addName());
     </script>
 </body>
